@@ -7,7 +7,7 @@ Group: Applications/System
 Source: ftp.yggdrasil.com:/pub/dist/mkdosfs/mkdosfs-ygg-0.3b.tar.gz
 Patch0: mkdosfs-ygg-0.3b-fix.patch
 Patch1: mkdosfs-ygg-0.3b-sparc.patch
-BuildRoot: /var/tmp/mkdosfs-ygg-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 The mkdosfs program is used to create an MS-DOS FAT file system on a
