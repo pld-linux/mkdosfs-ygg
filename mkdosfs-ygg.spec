@@ -2,7 +2,7 @@ Summary:	A program which creates MS-DOS FAT filesystems on Linux systems
 Summary(pl):	Program do tworzenia systemów plików MS-DOS FAT pod Linuksem
 Name:		mkdosfs-ygg
 Version:	0.3b
-Release:	12
+Release:	13
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
@@ -47,5 +47,5 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/mkfs.msdos
 %attr(755,root,root) %{_sbindir}/mkdosfs
-%{_mandir}/man8/mkfs.msdos.8
-%{_mandir}/man8/mkdosfs.8
+%{_mandir}/man8/mkfs.msdos.8*
+%{_mandir}/man8/mkdosfs.8*
