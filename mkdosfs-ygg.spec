@@ -22,7 +22,7 @@ MS-DOS style file systems.
 %patch1 -p1 -b .sparc
 
 %build
-make
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
