@@ -1,45 +1,53 @@
-Summary:	A program which creates MS-DOS FAT filesystems on Linux systems.
+Summary:	A program which creates MS-DOS FAT filesystems on Linux systems
+Summary(pl):	Program do tworzenia systemów plików MS-DOS FAT pod Linuksem
 Name:		mkdosfs-ygg
 Version:	0.3b
 Release:	12
 License:	GPL
 Group:		Applications/System
-Source:		ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
+Group(de):	Applikationen/System
+Group(pl):	Aplikacje/System
+Source0:	ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
 Patch0:		%{name}-%{version}-fix.patch
 Patch1:		%{name}-%{version}-sparc.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_sbindir	/sbin
 
 %description
 The mkdosfs program is used to create an MS-DOS FAT file system on a
 Linux system device, usually a disk partition.
 
-The mkdosfs package should be installed if your machine needs to support
-MS-DOS style file systems.
+The mkdosfs package should be installed if your machine needs to
+support MS-DOS style file systems.
+
+%description -l pl
+Program mkdosfs s³u¿y do tworzenia systemów plików MS-DOS FAT na
+urz±dzeniach (zwykle partycjach).
 
 %prep
 %setup -q
-%patch0 -p1 -b .fix
-%patch1 -p1 -b .sparc
+%patch0 -p1
+%patch1 -p1
 
 %build
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/sbin
-mkdir -p $RPM_BUILD_ROOT/usr/man/man8
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir}/man8}
 
-install -m755 -s mkdosfs $RPM_BUILD_ROOT/sbin/mkfs.msdos
-ln -sf mkfs.msdos $RPM_BUILD_ROOT/sbin/mkdosfs
-install -m 644 mkdosfs.8 $RPM_BUILD_ROOT/usr/man/man8
-ln -sf mkdosfs.8 $RPM_BUILD_ROOT/usr/man/man8/mkfs.msdos.8
+install mkdosfs $RPM_BUILD_ROOT%{_sbindir}/mkfs.msdos
+ln -sf mkfs.msdos $RPM_BUILD_ROOT%{_sbindir}/mkdosfs
+install mkdosfs.8 $RPM_BUILD_ROOT%{_mandir}/man8
+echo '.so mkdosfs.8' > $RPM_BUILD_ROOT%{_mandir}/man8/mkfs.msdos.8
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,root,root)
-/sbin/mkfs.msdos 
-/sbin/mkdosfs
-/usr/man/man8/mkfs.msdos.8
-/usr/man/man8/mkdosfs.8
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_sbindir}/mkfs.msdos 
+%attr(755,root,root) %{_sbindir}/mkdosfs
+%{_mandir}/man8/mkfs.msdos.8
+%{_mandir}/man8/mkdosfs.8
