@@ -5,8 +5,6 @@ Version:	0.3b
 Release:	12
 License:	GPL
 Group:		Applications/System
-Group(de):	Applikationen/System
-Group(pl):	Aplikacje/System
 Source0:	ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
 Patch0:		%{name}-%{version}-fix.patch
 Patch1:		%{name}-%{version}-sparc.patch
