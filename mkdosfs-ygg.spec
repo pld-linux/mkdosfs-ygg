@@ -6,6 +6,7 @@ Release:	13
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
+# Source0-md5:	32b5ba7975ae2236e631a22a1e123e1b
 Patch0:		%{name}-%{version}-fix.patch
 Patch1:		%{name}-%{version}-sparc.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
