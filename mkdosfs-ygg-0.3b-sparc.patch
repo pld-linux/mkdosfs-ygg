@@ -1,0 +1,178 @@
+--- mkdosfs-ygg-0.3b/mkdosfs.c.sparc	Sat Apr 17 10:44:18 1999
++++ mkdosfs-ygg-0.3b/mkdosfs.c	Sat Apr 17 11:06:26 1999
+@@ -66,6 +66,17 @@
+ 
+ /* Macro definitions */
+ 
++#ifdef __sparc__
++#define SWAP16(__x)	((unsigned short)(((__x)>>8) | ((__x)<<8)))
++#define SWAP32(__x)	((unsigned int)((((__x) >> 24) & 0x000000ff) | \
++                                        (((__x) >>  8) & 0x0000ff00) | \
++                                        (((__x) <<  8) & 0x00ff0000) | \
++                                        (((__x) << 24) & 0xff000000)))
++#else
++#define SWAP16(__x)	(__x)
++#define SWAP32(__x)	(__x)
++#endif
++
+ /* Report a failure message and return a failure error code */
+ 
+ #define die( str ) fatal_error( "%s: " str "\n" )
+@@ -470,8 +481,8 @@
+       if (ioctl (dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
+ 	die ("unable to get diskette geometry for '%s'");
+ 
+-      bs.secs_track = param.sect;	/*  Set up the geometry information */
+-      bs.heads = param.head;
++      bs.secs_track = SWAP16(param.sect);	/*  Set up the geometry information */
++      bs.heads = SWAP16(param.head);
+       switch (param.size)	/*  Set up the media descriptor byte */
+ 	{
+ 	case 720:		/* 5.25", 2, 9, 40 - 360K */
+@@ -518,8 +529,8 @@
+       /* whether to use HDIO_GETGEO or HDIO_REQ) */
+       if (ioctl (dev, HDIO_GETGEO, &geometry))
+ 	die ("unable to get drive geometry for '%s'");
+-      bs.secs_track = geometry.sectors;	/* Set up the geometry information */
+-      bs.heads = geometry.heads;
++      bs.secs_track = SWAP16(geometry.sectors);	/* Set up the geometry information */
++      bs.heads = SWAP16(geometry.heads);
+       bs.media = (char) 0xf8; /* Set up the media descriptor for a hard drive */
+       bs.cluster_size = (char) 4;	/* Start at 4 sectors per cluster */
+       bs.dir_entries[0] = (char) 0;	/* Default to 512 entries */
+@@ -563,29 +574,29 @@
+ 
+   memcpy(bs.boot_jump, dummy_boot_jump, 3);
+   memcpy(bs.boot_code, dummy_boot_code, 448);
+-  bs.boot_sign = BOOT_SIGN;
++  bs.boot_sign = SWAP16(BOOT_SIGN);
+ 
+   bs.sector_size[0] = (char) (SECTOR_SIZE & 0x00ff);
+   bs.sector_size[1] = (char) ((SECTOR_SIZE & 0xff00) >> 8);
+-  bs.reserved = 1;
++  bs.reserved = SWAP16(1);
+   bs.fats = (char) nr_fats;
+   num_sectors = blocks * SECTORS_PER_BLOCK;
+   if (num_sectors >= 65536)
+     {
+       bs.sectors[0] = (char) 0;
+       bs.sectors[1] = (char) 0;
+-      bs.total_sect = num_sectors;
++      bs.total_sect = SWAP32(num_sectors);
+     }
+   else
+     {
+       bs.sectors[0] = (char) (num_sectors & 0x00ff);
+       bs.sectors[1] = (char) ((num_sectors & 0xff00) >> 8);
+-      bs.total_sect = 0;
++      bs.total_sect = SWAP32(0);
+     }
+-  bs.hidden = 0;
++  bs.hidden = SWAP32(0);
+ 
+   fatdata = num_sectors - cdiv (root_dir_entries * 32, SECTOR_SIZE) -
+-    bs.reserved;
++    SWAP16(bs.reserved);
+ 
+   if (sectors_per_cluster)
+     {
+@@ -632,13 +643,13 @@
+     {
+     case 12:
+       cluster_count = clust12;
+-      bs.fat_length = fatlength12;
++      bs.fat_length = SWAP16(fatlength12);
+       memcpy(bs.fs_type, MSDOS_FAT12_SIGN, 8);
+       break;
+ 
+     case 16:
+       cluster_count = clust16;
+-      bs.fat_length = fatlength16;
++      bs.fat_length = SWAP16(fatlength16);
+       memcpy(bs.fs_type, MSDOS_FAT16_SIGN, 8);
+       break;
+ 
+@@ -646,7 +657,7 @@
+       die("FAT not 12 or 16 bits\n");
+     }
+ 
+-  bs.ext_boot_sign = MSDOS_EXT_SIGN;
++  bs.ext_boot_sign = SWAP16(MSDOS_EXT_SIGN);
+ 
+   if (!cluster_count)
+     {
+@@ -658,7 +669,7 @@
+ 
+   
+ 
+-  start_data_sector = (int) (bs.reserved) + nr_fats * (int) (bs.fat_length);
++  start_data_sector = (int) (SWAP16(bs.reserved)) + nr_fats * (int) (SWAP16(bs.fat_length));
+   start_data_block = (start_data_sector + SECTORS_PER_BLOCK - 1) / SECTORS_PER_BLOCK;
+ 
+   if (blocks < start_data_block + 32)	/* Arbitrary undersize file system! */
+@@ -667,15 +678,15 @@
+   if (verbose)
+     {
+       printf("%s has %d head%s and %d sector%s per track,\n",
+-	     device_name, bs.heads, (bs.heads != 1) ? "s" : "",
+-	     bs.secs_track, (bs.secs_track != 1) ? "s" : ""); 
++	     device_name, SWAP16(bs.heads), (SWAP16(bs.heads) != 1) ? "s" : "",
++	     SWAP16(bs.secs_track), (SWAP16(bs.secs_track) != 1) ? "s" : ""); 
+       printf("using 0x%02x media descriptor, with %d sectors;\n",
+ 	     (int) (bs.media), num_sectors);
+       printf("file system has %d %d-bit FAT%s and %d sector%s per cluster.\n",
+ 	     (int) (bs.fats), size_fat, (bs.fats != 1) ? "s" : "",
+ 	     (int) (bs.cluster_size), (bs.cluster_size != 1) ? "s" : "");
+       printf ("FAT size is %d sector%s, and provides %d cluster%s.\n",
+-	      (int) (bs.fat_length), (bs.fat_length != 1) ? "s" : "",
++	      (int) (SWAP16(bs.fat_length)), (SWAP16(bs.fat_length) != 1) ? "s" : "",
+ 	      cluster_count, (cluster_count != 1) ? "s" : "");
+       printf ("Root directory contains %d slots.\n",
+ 	      (int) (bs.dir_entries[0]) + (int) (bs.dir_entries[1]) * 256);
+@@ -688,10 +699,10 @@
+ 
+   /* Make the file allocation tables! */
+ 
+-  if ((fat = (unsigned char *) malloc ((int) (bs.fat_length) * SECTOR_SIZE)) == NULL)
++  if ((fat = (unsigned char *) malloc ((int) (SWAP16(bs.fat_length)) * SECTOR_SIZE)) == NULL)
+     die ("unable to allocate space for FAT image in memory");
+ 
+-  for (i = 0; i < (int) (bs.fat_length) * SECTOR_SIZE; i++)
++  for (i = 0; i < (int) (SWAP16(bs.fat_length)) * SECTOR_SIZE; i++)
+     fat[i] = (char) 0;
+ 
+   mark_FAT_cluster (0, 0xffff);	/* Initial fat entries */
+@@ -720,11 +731,13 @@
+       ctime = localtime(&create_time);
+       root_dir[0].time = (unsigned short)((ctime->tm_sec >> 1) +
+ 			  (ctime->tm_min << 5) + (ctime->tm_hour << 11));
++      root_dir[0].time = SWAP16(root_dir[0].time);
+       root_dir[0].date = (unsigned short)(ctime->tm_mday +
+ 					  ((ctime->tm_mon+1) << 5) +
+ 					  ((ctime->tm_year-80) << 9));
+-      root_dir[0].start = 0;
+-      root_dir[0].size = 0;
++      root_dir[0].date = SWAP16(root_dir[0].date);
++      root_dir[0].start = SWAP16(0);
++      root_dir[0].size = SWAP32(0);
+       memset(root_dir+1, 0, size_root_dir-sizeof(struct msdos_dir_entry));
+     }
+ 
+@@ -763,14 +776,14 @@
+       free (root_dir);
+       die ("failed whilst writing boot sector");
+     }
+-  if (lseek (dev, SECTOR_SIZE * (int) (bs.reserved), SEEK_SET) != SECTOR_SIZE * (int) (bs.reserved))
++  if (lseek (dev, SECTOR_SIZE * (int) (SWAP16(bs.reserved)), SEEK_SET) != SECTOR_SIZE * (int) (SWAP16(bs.reserved)))
+     {
+       free (fat);
+       free (root_dir);
+       die ("seek 3 failed whilst writing tables");
+     }
+   for (x = 1; x <= nr_fats; x++)
+-    if (write (dev, fat, (int) (bs.fat_length) * SECTOR_SIZE) != (int) (bs.fat_length) * SECTOR_SIZE)
++    if (write (dev, fat, (int) (SWAP16(bs.fat_length)) * SECTOR_SIZE) != (int) (SWAP16(bs.fat_length)) * SECTOR_SIZE)
+       {
+ 	free (fat);
+ 	free (root_dir);
+

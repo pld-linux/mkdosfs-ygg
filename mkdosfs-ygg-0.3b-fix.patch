@@ -1,0 +1,57 @@
+--- mkdosfs-ygg-0.3b/mkdosfs.c.fix	Tue Oct 13 15:52:38 1998
++++ mkdosfs-ygg-0.3b/mkdosfs.c	Tue Oct 13 16:15:48 1998
+@@ -43,7 +43,6 @@
+ #include <fcntl.h>
+ #include <linux/hdreg.h>
+ #include <linux/fs.h>
+-#include <linux/stat.h>
+ #include <linux/fd.h>
+ #include <mntent.h>
+ #include <signal.h>
+@@ -122,8 +121,8 @@
+   unsigned short fat_length;	/* sectors/FAT */
+   unsigned short secs_track;	/* sectors per track */
+   unsigned short heads;		/* number of heads */
+-  unsigned long hidden;		/* hidden sectors (unused) */
+-  unsigned long total_sect;	/* number of sectors (if sectors == 0) */
++  unsigned int hidden;		/* hidden sectors (unused) */
++  unsigned int total_sect;	/* number of sectors (if sectors == 0) */
+   unsigned char drive_number;	/* BIOS drive number */
+   unsigned char RESERVED;	/* Unused */
+   unsigned char ext_boot_sign;	/* 0x29 if fields below exist (DOS 3.3+) */
+@@ -140,7 +139,7 @@
+     unsigned char attr;		/* attribute bits */
+     char unused[10];
+     unsigned short time, date, start;	/* time, date and first cluster */
+-    unsigned long size;		/* file size (in bytes) */
++    unsigned int size;		/* file size (in bytes) */
+   };
+ 
+ /* The "boot code" we put into the filesystem... it writes a message and
+@@ -206,7 +205,7 @@
+ static volatile void fatal_error (const char *fmt_string);
+ static void mark_FAT_cluster (int cluster, unsigned int value);
+ static void mark_FAT_sector (int sector, unsigned int value);
+-static long do_check (char *buffer, int try, unsigned int current_block);
++static int do_check (char *buffer, int try, unsigned int current_block);
+ static void alarm_intr (int alnum);
+ static void check_blocks (void);
+ static void get_list_blocks (char *filename);
+@@ -276,7 +275,7 @@
+ 
+ /* Perform a test on a block.  Return the number of blocks that could be read successfully */
+ 
+-static long
++static int
+ do_check (char *buffer, int try, unsigned int current_block)
+ {
+   long got;
+@@ -818,7 +817,7 @@
+     program_name = *argv;
+ 
+   time(&create_time);
+-  volume_id = (long)create_time;	/* Default volume ID = creation time */
++  volume_id = create_time;	/* Default volume ID = creation time */
+ 
+   fprintf (stderr, "%s 0.3b (Yggdrasil), 5th May 1995 for MS-DOS FS\n",
+ 	   program_name);
