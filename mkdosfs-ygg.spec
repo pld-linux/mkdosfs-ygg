@@ -1,12 +1,12 @@
 Summary:	A program which creates MS-DOS FAT filesystems on Linux systems.
 Name:		mkdosfs-ygg
 Version:	0.3b
-Release:	11
+Release:	12
 License:	GPL
 Group:		Applications/System
 Source:		ftp://ftp.yggdrasil.com/pub/dist/mkdosfs/%{name}-%{version}.tar.gz
-Patch0		 mkdosfs-ygg-0.3b-fix.patch
-Patch1:		mkdosfs-ygg-0.3b-sparc.patch
+Patch0:		%{name}-%{version}-fix.patch
+Patch1:		%{name}-%{version}-sparc.patch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
