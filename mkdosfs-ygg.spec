@@ -30,7 +30,9 @@ urz±dzeniach (zwykle partycjach).
 %patch1 -p1
 
 %build
-%{__make}
+%{__make} \
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -46,6 +48,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
+%doc ChangeLog README
 %attr(755,root,root) %{_sbindir}/mkfs.msdos
 %attr(755,root,root) %{_sbindir}/mkdosfs
 %{_mandir}/man8/mkfs.msdos.8*
