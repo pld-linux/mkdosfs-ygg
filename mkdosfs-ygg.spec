@@ -1,5 +1,5 @@
 Summary:	A program which creates MS-DOS FAT filesystems on Linux systems
-Summary(pl):	Program do tworzenia system體 plik體 MS-DOS FAT pod Linuksem
+Summary(pl.UTF-8):   Program do tworzenia system贸w plik贸w MS-DOS FAT pod Linuksem
 Name:		mkdosfs-ygg
 Version:	0.3b
 Release:	13
@@ -20,9 +20,9 @@ Linux system device, usually a disk partition.
 The mkdosfs package should be installed if your machine needs to
 support MS-DOS style file systems.
 
-%description -l pl
-Program mkdosfs s硊縴 do tworzenia system體 plik體 MS-DOS FAT na
-urz眃zeniach (zwykle partycjach).
+%description -l pl.UTF-8
+Program mkdosfs s艂u偶y do tworzenia system贸w plik贸w MS-DOS FAT na
+urz膮dzeniach (zwykle partycjach).
 
 %prep
 %setup -q
