@@ -1,5 +1,5 @@
 Summary:	A program which creates MS-DOS FAT filesystems on Linux systems
-Summary(pl.UTF-8):   Program do tworzenia systemów plików MS-DOS FAT pod Linuksem
+Summary(pl.UTF-8):	Program do tworzenia systemów plików MS-DOS FAT pod Linuksem
 Name:		mkdosfs-ygg
 Version:	0.3b
 Release:	13
